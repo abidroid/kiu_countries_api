@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kiu_countries_api/models/country.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,7 +14,9 @@ class CountryListScreen extends StatefulWidget {
 }
 
 class _CountryListScreenState extends State<CountryListScreen> {
+
   Future<List<Country>> getAllCountries() async {
+
     String url = 'https://countriesnow.space/api/v0.1/countries/flag/images';
 
     var response = await http.get(Uri.parse(url));
@@ -24,7 +27,10 @@ class _CountryListScreenState extends State<CountryListScreen> {
       var jsonResponse = json.decode(response.body);
       var jsonCountryList = jsonResponse['data'];
 
-      for (var jsonCountry in jsonCountryList) {
+      // convert map to country object
+      // and save in countries list
+      for (var jsonCountry in jsonCountryList)
+      {
         Country country = Country.fromJson(jsonCountry);
         countries.add(country);
       }
@@ -39,7 +45,8 @@ class _CountryListScreenState extends State<CountryListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Country List'),
+          backgroundColor: Colors.green,
+          title: const Text('Country List', style: TextStyle(color: Colors.white),),
         ),
         body: FutureBuilder<List<Country>>(
             future: getAllCountries(),
@@ -47,9 +54,32 @@ class _CountryListScreenState extends State<CountryListScreen> {
               if (snapshot.hasData) {
                 List<Country> countries = snapshot.data!;
 
-                return Center(
-                  child: Text('${countries.length}'),
-                );
+                return ListView.builder(
+                    itemCount: countries.length,
+                    itemBuilder: (BuildContext context, int index){
+
+                      Country country = countries[index];
+
+                      return Card(
+                        color: Colors.amber[100],
+
+                        child: Padding(
+                          padding: const EdgeInsets.all( 16.0),
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                  width: 100,
+                                  height: 80,
+                                  child: SvgPicture.network(country.flag!)),
+
+                              const SizedBox(width: 16,),
+                              Text(country.name!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                            ],
+                          ),
+                        ),
+                      );
+
+                    });
               } else {
                 return const Center(
                   child: SpinKitDualRing(
