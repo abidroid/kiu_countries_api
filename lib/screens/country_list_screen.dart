@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kiu_countries_api/models/country.dart';
 import 'package:http/http.dart' as http;
+import 'package:kiu_countries_api/screens/country_detail_screen.dart';
 
 class CountryListScreen extends StatefulWidget {
   const CountryListScreen({super.key});
@@ -60,21 +61,32 @@ class _CountryListScreenState extends State<CountryListScreen> {
 
                       Country country = countries[index];
 
-                      return Card(
-                        color: Colors.amber[100],
+                      return GestureDetector(
+                        onTap: (){
 
-                        child: Padding(
-                          padding: const EdgeInsets.all( 16.0),
-                          child: Row(
-                            children: [
-                              SizedBox(
-                                  width: 100,
-                                  height: 80,
-                                  child: SvgPicture.network(country.flag!)),
+                          Navigator.of(context).push(MaterialPageRoute(builder: (context){
+                            return CountryDetailScreen(country: country);
+                          }));
 
-                              const SizedBox(width: 16,),
-                              Text(country.name!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
-                            ],
+                        },
+                        child: Card(
+                          color: Colors.amber[100],
+
+                          child: Padding(
+                            padding: const EdgeInsets.all( 16.0),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                    width: 100,
+                                    height: 80,
+                                    child: Hero(
+                                        tag: country.name!,
+                                        child: SvgPicture.network(country.flag!))),
+
+                                const SizedBox(width: 16,),
+                                Text(country.name!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),
+                              ],
+                            ),
                           ),
                         ),
                       );
